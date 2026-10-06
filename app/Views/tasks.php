@@ -54,6 +54,52 @@
             font-weight: bold;
             text-transform: uppercase;
         }
+
+        .actions {
+            margin-top: 15px;
+        }
+
+        .edit-button,
+        .archive-button {
+            display: inline-block;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .edit-button {
+            background: #333;
+        }
+
+        .edit-button:hover {
+            background: #555;
+        }
+
+        .archive-button {
+            background: #8b0000;
+        }
+
+        .archive-button:hover {
+            background: #b00000;
+        }
+
+        .success {
+            background: #d1e7dd;
+            color: #0f5132;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .no-tasks {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
     </style>
 </head>
 
@@ -70,23 +116,72 @@
 
     <h1>All Tasks</h1>
 
-    <?php foreach ($tasks as $task): ?>
+    <?php if (session()->getFlashdata('success')): ?>
+        <div class="success">
+            <?= esc(session()->getFlashdata('success')) ?>
+        </div>
+    <?php endif; ?>
 
-        <div class="task <?= esc($task['status']) ?>">
+    <?php if (empty($tasks)): ?>
 
-            <strong><?= esc($task['title']) ?></strong>
-
-            <p>
-                Date: <?= esc($task['task_date']) ?>
-            </p>
-
-            <p class="status">
-                Status: <?= esc($task['status']) ?>
-            </p>
-
+        <div class="no-tasks">
+            No tasks available.
         </div>
 
-    <?php endforeach; ?>
+    <?php else: ?>
+
+        <?php foreach ($tasks as $task): ?>
+
+            <div class="task <?= esc($task['status']) ?>">
+
+                <strong><?= esc($task['title']) ?></strong>
+
+                <p>
+                    Date: <?= esc($task['task_date']) ?>
+                </p>
+
+                <p class="status">
+                    Status: <?= esc($task['status']) ?>
+                </p>
+
+                <?php if (session()->get('logged_in')): ?>
+
+                    <div class="actions">
+
+                        <a
+                            href="<?= site_url('tasks/edit/' . $task['id']) ?>"
+                            class="edit-button"
+                        >
+                            Edit
+                        </a>
+
+                        <form
+                            action="<?= site_url('tasks/delete/' . $task['id']) ?>"
+                            method="post"
+                            style="display: inline;"
+                            onsubmit="return confirm('Are you sure you want to archive this task?');"
+                        >
+
+                            <?= csrf_field() ?>
+
+                            <button
+                                type="submit"
+                                class="archive-button"
+                            >
+                                Archive
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                <?php endif; ?>
+
+            </div>
+
+        <?php endforeach; ?>
+
+    <?php endif; ?>
 
 </div>
 

@@ -12,8 +12,7 @@ class TaskModel extends Model
 
     protected $allowedFields = [
         'title',
-        'status',
         'task_date',
-        'created_at'
+        'is_archived'
     ];
 }
